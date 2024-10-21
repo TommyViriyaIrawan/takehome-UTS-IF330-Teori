@@ -7,12 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
-$user_id = $_SESSION['user_id'];
-
-// Ambil daftar event terbuka
-$sql = "SELECT event_id, event_name, event_date, event_location, event_description FROM events WHERE status = 'open'";
-$result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -21,53 +15,49 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Browsing</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding-top: 50px;
-        }
-        .container {
-            max-width: 800px;
-        }
-        .event-card {
-            margin-bottom: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
+<body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="#">Event System</a>
-        <div class="ml-auto">
-            <a href="logout.php" class="btn btn-outline-danger">Logout</a>
+        <a class="navbar-brand" href="#">Event Registration</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="user_registered_events.php">View Registered Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="user_profile.php">Profile</a>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Available Events</h2>
-    <?php if ($result->num_rows > 0): ?>
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="event-card">
-                <h3><?= htmlspecialchars($row['event_name']) ?></h3>
-                <p><strong>Date:</strong> <?= $row['event_date'] ?></p>
-                <p><strong>Location:</strong> <?= htmlspecialchars($row['event_location']) ?></p>
-                <p><?= htmlspecialchars($row['event_description']) ?></p>
-                <a href="user_register_event.php?event_id=<?= $row['event_id'] ?>" class="btn btn-primary">Register</a>
+    <h2>Browse Events</h2>
+    <div class="row">
+        <?php
+        $query = "SELECT * FROM events";
+        $result = $conn->query($query);
+
+        while ($row = $result->fetch_assoc()): ?>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><?php echo $row['event_name']; ?></h5>
+                        <p class="card-text">
+                            <strong>Date:</strong> <?php echo $row['event_date']; ?><br>
+                            <strong>Location:</strong> <?php echo $row['event_location']; ?>
+                        </p>
+                        <a href="user_register_event.php?event_id=<?php echo $row['event_id']; ?>" 
+                           class="btn btn-primary">Register</a>
+                    </div>
+                </div>
             </div>
         <?php endwhile; ?>
-    <?php else: ?>
-        <p class="text-center">No events available at the moment.</p>
-    <?php endif; ?>
-
-    <div class="text-center mt-4">
-        <a href="user_registered_events.php" class="btn btn-success">View Registered Events</a>
     </div>
 </div>
 

@@ -2,30 +2,34 @@
 session_start();
 require 'config.php';
 
-$user_id = $_SESSION['user_id'];
-$event_id = $_POST['event_id'];
+$registration_id = $_POST['registration_id'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-// Verifikasi email dan password
-$stmt = $conn->prepare("SELECT password FROM users WHERE user_id = ? AND email = ?");
-$stmt->bind_param("is", $user_id, $email);
+// Verifikasi email dan password user
+$stmt = $conn->prepare("SELECT password FROM users WHERE email = ?");
+$stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
-$user = $result->fetch_assoc();
 
-if ($user && password_verify($password, $user['password'])) {
-    // Hapus pendaftaran
-    $deleteStmt = $conn->prepare("DELETE FROM registrations WHERE user_id = ? AND event_id = ?");
-    $deleteStmt->bind_param("ii", $user_id, $event_id);
-    if ($deleteStmt->execute()) {
-        echo "Registration cancelled successfully.";
+if ($result->num_rows === 1) {
+    $user = $result->fetch_assoc();
+    // Verifikasi password
+    if (password_verify($password, $user['password'])) {
+        // Hapus registrasi
+        $deleteStmt = $conn->prepare("DELETE FROM registrations WHERE registration_id = ?");
+        $deleteStmt->bind_param("i", $registration_id);
+        if ($deleteStmt->execute()) {
+            echo "success";
+        } else {
+            echo "error";
+        }
+        $deleteStmt->close();
     } else {
-        echo "Error: " . $deleteStmt->error;
+        echo "invalid";
     }
-    $deleteStmt->close();
 } else {
-    echo "Invalid email or password.";
+    echo "invalid";
 }
 
 $stmt->close();
