@@ -24,7 +24,7 @@ function exportToCSV($filename, $data) {
 // Cek jika tombol ekspor CSV ditekan
 if (isset($_GET['export_registrations'])) {
     $event_id = $_GET['event_id'];
-    $stmt = $conn->prepare("SELECT u.name, u.email FROM registrations r JOIN users u ON r.user_id = u.id WHERE r.event_id = ?");
+    $stmt = $conn->prepare("SELECT u.name, u.email FROM registrations r JOIN users u ON r.user_id = u.user_id WHERE r.event_id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -77,10 +77,10 @@ $result_users = $conn->query($sql_users);
                         <td><?php echo $row['event_location']; ?></td>
                         <td>
                             <!-- List Registrants -->
-                            <a href="view_registrants.php?event_id=<?php echo isset($row['id']) ? $row['id'] : '#'; ?>" class="btn btn-info">View Registrants</a>
+                            <a href="view_registrants.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-info">View Registrants</a>
 
                             <!-- Export to CSV -->
-                            <a href="admin_dashboard.php?export_registrations=1&event_id=<?php echo isset($row['id']) ? $row['id'] : '#'; ?>" class="btn btn-success">Export to CSV</a>
+                            <a href="admin_dashboard.php?export_registrations=1&event_id=<?php echo $row['event_id']; ?>" class="btn btn-success">Export to CSV</a>
                         </td>
                     </tr>
                 <?php } ?>
@@ -104,9 +104,9 @@ $result_users = $conn->query($sql_users);
                         <td><?php echo $row['email']; ?></td>
                         <td>
                             <!-- View User's Event Registrations -->
-                            <a href="view_user_events.php?user_id=<?php echo isset($row['id']) ? $row['id'] : '#'; ?>" class="btn btn-info">View User Events</a>
+                            <a href="view_user_events.php?user_id=<?php echo $row['user_id']; ?>" class="btn btn-info">View User Events</a>
                             <!-- Delete User -->
-                            <button class="btn btn-danger delete-user-btn" data-user-id="<?php echo isset($row['id']) ? $row['id'] : ''; ?>">Delete</button>
+                            <button class="btn btn-danger delete-user-btn" data-user-id="<?php echo $row['user_id']; ?>">Delete</button>
                         </td>
                     </tr>
                 <?php } ?>

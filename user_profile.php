@@ -43,10 +43,9 @@ $user = $result->fetch_assoc();
             <h4 class="card-title">Profile Information</h4>
             <p><strong>Name:</strong> <?php echo $user['name']; ?></p>
             <p><strong>Email:</strong> <?php echo $user['email']; ?></p>
-    
 
             <!-- Logout Button -->
-            <a href="logout.php" class="btn btn-danger mt-3">Logout</a>
+            <button id="logoutBtn" class="btn btn-danger mt-3">Logout</button>
         </div>
     </div>
 
@@ -54,7 +53,7 @@ $user = $result->fetch_assoc();
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Edit Profile</h4>
-            <form action="update_profile.php" method="POST">
+            <form id="updateForm" action="index.php" method="POST">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input type="text" name="name" id="name" class="form-control" 
@@ -69,11 +68,106 @@ $user = $result->fetch_assoc();
                     <label for="password" class="form-label">New Password (Optional)</label>
                     <input type="password" name="password" id="password" class="form-control">
                 </div>
-                <button type="submit" class="btn btn-primary">Update Profile</button>
+                <button type="button" id="updateBtn" class="btn btn-primary">Update Profile</button>
             </form>
         </div>
     </div>
 </div>
+
+<!-- Pop-up Konfirmasi -->
+<div id="confirmPopup" class="modal" tabindex="-1" role="dialog" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Are you sure?</h5>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to proceed with this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmYes">Yes</button>
+                <button type="button" class="btn btn-secondary" id="confirmNo">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email and Password Confirmation Modal -->
+<div id="authPopup" class="modal" tabindex="-1" role="dialog" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Please Confirm</h5>
+            </div>
+            <div class="modal-body">
+                <p>Enter your email and password to confirm:</p>
+                <input type="email" id="authEmail" class="form-control mb-2" placeholder="Email">
+                <input type="password" id="authPassword" class="form-control mb-2" placeholder="Password">
+                <p id="authError" class="text-danger" style="display: none;">Invalid email or password.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="authConfirm">Confirm</button>
+                <button type="button" class="btn btn-secondary" id="cancelAuth">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    let actionType = null;
+
+    // Handle Logout button click
+    $("#logoutBtn").on("click", function() {
+        actionType = "logout";
+        $("#confirmPopup").fadeIn(); // Show confirmation pop-up
+    });
+
+    // Handle Update Profile button click
+    $("#updateBtn").on("click", function() {
+        actionType = "update";
+        $("#confirmPopup").fadeIn(); // Show confirmation pop-up
+    });
+
+    // Handle confirmation 'Yes' button click
+    $("#confirmYes").on("click", function() {
+        $("#confirmPopup").fadeOut();
+        $("#authPopup").fadeIn(); // Show authentication pop-up
+    });
+
+    // Handle authentication 'Cancel' button
+    $("#cancelAuth").on("click", function() {
+        $("#authPopup").fadeOut(); // Close the authentication modal
+    });
+
+    // Handle authentication 'Confirm' button
+    $("#authConfirm").on("click", function() {
+        const email = $("#authEmail").val();
+        const password = $("#authPassword").val();
+
+        // Perform AJAX request to confirm the user's identity
+        $.ajax({
+            url: "confirm_update_user.php", // A new PHP file to handle the authentication
+            type: "POST",
+            data: {
+                email: email,
+                password: password
+            },
+            success: function(response) {
+                if (response === "success") {
+                    if (actionType === "logout") {
+                        window.location.href = "index.php"; // Redirect to logout page
+                    } else if (actionType === "update") {
+                        $("#updateForm").submit(); // Submit the update form
+                    }
+                } else {
+                    $("#authError").show(); // Show error message
+                }
+            }
+        });
+    });
+});
+</script>
 
 </body>
 </html>

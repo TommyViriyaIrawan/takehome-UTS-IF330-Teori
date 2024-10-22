@@ -5,9 +5,9 @@ require 'config.php';
 $user_id = $_GET['user_id'];
 
 // Ambil daftar event yang diikuti oleh user
-$stmt = $conn->prepare("SELECT e.event_name, e.event_date, e.location 
+$stmt = $conn->prepare("SELECT e.event_name, e.event_date, e.event_location 
                         FROM registrations r
-                        JOIN events e ON r.event_id = e.id
+                        JOIN events e ON r.event_id = e.event_id
                         WHERE r.user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -38,7 +38,7 @@ $result = $stmt->get_result();
                     <tr>
                         <td><?php echo $row['event_name']; ?></td>
                         <td><?php echo $row['event_date']; ?></td>
-                        <td><?php echo $row['location']; ?></td>
+                        <td><?php echo $row['event_location']; ?></td>
                     </tr>
                 <?php } ?>
             </tbody>

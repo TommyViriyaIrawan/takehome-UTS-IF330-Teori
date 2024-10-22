@@ -2,6 +2,8 @@
 session_start();
 require 'config.php';
 
+$error_message = ""; // Variabel untuk menyimpan pesan error
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -16,11 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($user && password_verify($password, $user['password'])) {
         // Simpan user_id ke session setelah berhasil login
         $_SESSION['user_id'] = $user['user_id'];
-        echo "Login successful!";
         header("Location: user_event_browsing.php");
         exit();
     } else {
-        echo "Invalid email or password!";
+        $error_message = "<div class='alert alert-danger text-center'>Invalid email or password!</div>";
     }
 
     $stmt->close();
@@ -49,11 +50,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
+            width: 300px;
+            position:absolute;
         }
         .btn-custom {
             width: 200px;
             margin: 10px;
         }
+        .error-message {
+            margin-top: 10px;
+            width: 100%;
+            position: relative;
+            bottom: -10px;
+        }
+        
     </style>
 </head>
 <body>
@@ -65,7 +75,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="password" name="password" placeholder="Password" required class="form-control mb-3">
             <button type="submit" class="btn btn-primary btn-custom">Login</button>
         </form>
-        <a href="forgot_password.php" class="btn btn-link">Forgot Password?</a> <!-- Tombol Forgot Password -->
+        <a href="forgot_password.php" class="btn btn-link">Forgot Password?</a>
+
+        <!-- Tambahkan Tombol Daftar -->
+        <div class="mt-3">
+            <span>Belum punya akun? </span><a href="register.php">Daftar</a>
+        </div>
+
+        <!-- Div untuk menampilkan pesan error di bawah login container -->
+        <?php if ($error_message != ""): ?>
+            <div class="error-message">
+                <?php echo $error_message; ?>
+            </div>
+        <?php endif; ?>
     </div>
 
 </body>

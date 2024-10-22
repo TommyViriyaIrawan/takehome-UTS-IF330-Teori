@@ -5,7 +5,7 @@ require 'config.php';
 $event_id = $_GET['event_id'];
 
 // Ambil daftar pendaftar dari database
-$stmt = $conn->prepare("SELECT u.name, u.email FROM registrations r JOIN users u ON r.user_id = u.id WHERE r.event_id = ?");
+$stmt = $conn->prepare("SELECT u.name, u.email FROM registrations r JOIN users u ON r.user_id = u.user_id WHERE r.event_id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
 $result = $stmt->get_result();

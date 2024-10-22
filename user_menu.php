@@ -3,28 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Registration System</title>
+    <title>User Menu</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             background-color: #f8f9fa;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
         .menu-container {
             background-color: white;
-            border-radius: 10px;
             padding: 30px;
+            border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
-        }
-        h1 {
-            margin-bottom: 30px;
+            width: 350px;
         }
         .btn-custom {
-            width: 200px;
+            width: 150px;
             margin: 10px;
         }
     </style>
@@ -32,10 +30,12 @@
 <body>
 
     <div class="menu-container">
-        <h1>Welcome to Event Registration</h1>
-        <p>Please choose your role:</p>
-        <a href="admin_menu.php" class="btn btn-danger btn-custom">Admin</a>
-        <a href="user_menu.php" class="btn btn-primary btn-custom">User</a>
+        <h2>Welcome to User Menu</h2>
+        <p>Please choose your action:</p>
+        <div class="d-flex justify-content-around">
+            <a href="login.php" class="btn btn-primary btn-custom">Login</a>
+            <a href="register.php" class="btn btn-success btn-custom">Register</a>
+        </div>
     </div>
 
 </body>
