@@ -53,15 +53,39 @@ $result_users = $conn->query($sql_users);
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Styling untuk tanggal dan jam realtime */
+        .datetime {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .datetime span {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
+        <div class="datetime">
+            <span id="currentDateTime"></span>
+        </div>
         <h2>Admin Dashboard</h2>
 
         <!-- View Event Registrations -->
         <h4>View Event Registrations</h4>
-        <!-- Add New Event Button -->
-        <button id="addEventBtn" class="btn btn-primary mb-3">Add New Event</button>
+        <!-- Add New Event Button and Logout -->
+        <div class="d-flex justify-content-between mb-3">
+            <button id="addEventBtn" class="btn btn-primary">Add New Event</button>
+            <a href="index.php" class="btn btn-danger">Logout</a>
+        </div>
 
         <table class="table table-bordered">
             <thead>
@@ -71,6 +95,7 @@ $result_users = $conn->query($sql_users);
                     <th>Time</th>
                     <th>Location</th>
                     <th>Description</th>
+                    <th>Max Participants</th>
                     <th>Banner</th>
                     <th>Actions</th>
                 </tr>
@@ -83,7 +108,8 @@ $result_users = $conn->query($sql_users);
                         <td><?php echo $row['event_time']; ?></td>
                         <td><?php echo $row['event_location']; ?></td>
                         <td><?php echo $row['event_description']; ?></td>
-                        <!-- Tampilkan Banner Event -->
+                        <td><?php echo $row['max_participants']; ?></td>
+                        <!-- Display Event Banner -->
                         <td>
                             <?php if (!empty($row['event_image'])) { ?>
                                 <img src="uploads/<?php echo $row['event_image']; ?>" alt="Event Banner" style="width: 100px; height: auto;">
@@ -98,6 +124,8 @@ $result_users = $conn->query($sql_users);
 
                             <!-- Export to CSV -->
                             <a href="admin_dashboard.php?export_registrations=1&event_id=<?php echo $row['event_id']; ?>" class="btn btn-success">Export to CSV</a>
+
+                            <a href="edit_event.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-warning">Edit</a>
 
                             <!-- Delete Event -->
                             <a href="delete_event.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-danger">Delete</a>
@@ -135,7 +163,7 @@ $result_users = $conn->query($sql_users);
     </div>
 
     <script>
-        // Fungsi untuk menghapus user dengan AJAX
+        // Function to delete user using AJAX
         $(".delete-user-btn").on("click", function () {
             const userId = $(this).data("user-id");
             if (confirm("Are you sure you want to delete this user?")) {
@@ -155,10 +183,19 @@ $result_users = $conn->query($sql_users);
             }
         });
 
-        // Arahkan ke halaman Add New Event
+        // Redirect to the Add New Event page
         $("#addEventBtn").on("click", function () {
             window.location.href = "add_event.php";
         });
+
+        // Real-time date and time display
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeString = now.toLocaleString();
+            document.getElementById('currentDateTime').textContent = dateTimeString;
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime(); // Initial call to display date and time immediately
     </script>
 </body>
 </html>

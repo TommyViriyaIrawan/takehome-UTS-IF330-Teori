@@ -1,6 +1,31 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Oct 24, 2024 at 10:08 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `event_registration`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
 
 CREATE TABLE `admins` (
   `admin_id` int(11) NOT NULL,
@@ -39,12 +64,11 @@ CREATE TABLE `events` (
 --
 
 INSERT INTO `events` (`event_id`, `event_name`, `event_date`, `event_time`, `event_location`, `event_description`, `max_participants`, `event_image`, `status`) VALUES
-(1, 'Fanmeet Lisa', '2024-10-29', NULL, 'Ancol', 'Lisa Blackpink', 5000, NULL, 'open'),
-(2, 'comifuro', '2024-10-30', NULL, 'ICE BSD', 'wibu', 10000, NULL, 'open'),
-(3, 'potong sapi', '2024-10-08', NULL, 'masjid', 'makan makan', 300, NULL, 'open'),
-(4, 'makan makan', '2024-10-10', NULL, 'rumah hexsel', 'indomie 50 biji', 10, NULL, 'open'),
-(5, 'makan makan', '2024-10-10', NULL, 'rumah hexsel', 'indomie 50 biji', 10, NULL, 'open'),
-(8, 'asdf', '2024-10-15', NULL, 'adsf', 'asdf', 6, NULL, 'open');
+(15, 'makan makan', '2024-10-11', '14:41:00', 'adadasd', '0', 123123, 'Screenshot 2023-03-05 104209.png', 'open'),
+(16, 'makan makan', '2024-10-08', '14:42:00', 'asd', '0', 123, 'Screenshot 2023-09-26 202911.png', 'open'),
+(17, 'makan makan', '2024-10-09', '14:53:00', 'rumah hexsel', '0', 12, 'Screenshot 2023-10-14 103531.png', 'open'),
+(18, 'makan makan', '2024-10-25', '17:02:00', 'rumah hexsel', '0', 123, 'Screenshot 2023-03-14 213318.png', 'open'),
+(19, 'makan makan', '2024-10-05', '15:10:00', 'rumah hexsel', '0', 12312321, 'Screenshot 2023-03-14 145930.png', 'open');
 
 -- --------------------------------------------------------
 
@@ -119,13 +143,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `admins`
 --
 ALTER TABLE `admins`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `registrations`

@@ -2,60 +2,61 @@
 session_start();
 require 'config.php';
 
-// Cek apakah admin sudah login
+// Pastikan admin sudah login
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: admin_login.php");
+    header("Location: login.php");
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Inisialisasi variabel error dan success
+$error = '';
+$success = '';
+
+// Proses form saat data dikirim
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $event_name = $_POST['event_name'];
     $event_date = $_POST['event_date'];
     $event_time = $_POST['event_time'];
     $event_location = $_POST['event_location'];
     $event_description = $_POST['event_description'];
     $max_participants = $_POST['max_participants'];
-    $status = 'open'; // Status default
 
-    // Mengunggah file gambar/banner
-    $target_dir = "uploads/";
-    $event_image = basename($_FILES["event_image"]["name"]);
-    $target_file = $target_dir . $event_image;
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-    // Validasi: Pastikan file adalah gambar
-    $check = getimagesize($_FILES["event_image"]["tmp_name"]);
-    if ($check === false) {
-        die("File yang diunggah bukan gambar.");
-    }
-
-    // Batasi tipe file gambar (jpg, jpeg, png, gif)
-    if (!in_array($imageFileType, ['jpg', 'jpeg', 'png', 'gif'])) {
-        die("Hanya file JPG, JPEG, PNG, dan GIF yang diizinkan.");
-    }
-
-    // Pindahkan file ke folder 'uploads'
-    if (!move_uploaded_file($_FILES["event_image"]["tmp_name"], $target_file)) {
-        die("Gagal mengunggah gambar.");
-    }
-
-    // Simpan data event ke database
-    $stmt = $conn->prepare(
-        "INSERT INTO events (event_name, event_date, event_time, event_location, event_description, max_participants, event_image, status) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-    );
-    $stmt->bind_param("ssssisss", $event_name, $event_date, $event_time, $event_location, $event_description, $max_participants, $event_image, $status);
-
-    if ($stmt->execute()) {
-        // Redirect ke dashboard setelah berhasil
-        header("Location: admin_dashboard.php");
-        exit();
+    // Validasi input
+    if (empty($event_name) || empty($event_date) || empty($event_time) || empty($event_location) || empty($event_description) || empty($max_participants)) {
+        $error = 'Please fill out all required fields.';
     } else {
-        echo "Error: " . $stmt->error;
-    }
+        // Proses upload gambar jika ada
+        $image = '';
+        if (!empty($_FILES['event_image']['name'])) {
+            $target_dir = "uploads/";
+            $image = basename($_FILES["event_image"]["name"]);
+            $target_file = $target_dir . $image;
+            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-    $stmt->close();
-    $conn->close();
+            // Validasi tipe file gambar
+            $valid_extensions = ['jpg', 'png', 'jpeg', 'gif'];
+            if (!in_array($imageFileType, $valid_extensions)) {
+                $error = "Only JPG, JPEG, PNG & GIF files are allowed.";
+            } else {
+                // Pindahkan file ke folder uploads
+                if (!move_uploaded_file($_FILES["event_image"]["tmp_name"], $target_file)) {
+                    $error = "Sorry, there was an error uploading your file.";
+                }
+            }
+        }
+
+        // Jika tidak ada error, insert data ke database
+        if (empty($error)) {
+            $stmt = $conn->prepare("INSERT INTO events (event_name, event_date, event_time, event_location, event_description, max_participants, event_image) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssis", $event_name, $event_date, $event_time, $event_location, $event_description, $max_participants, $image);
+
+            if ($stmt->execute()) {
+                $success = "Event added successfully!";
+            } else {
+                $error = "Failed to add event. Please try again.";
+            }
+        }
+    }
 }
 ?>
 
@@ -65,66 +66,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Event</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .form-container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .btn-primary {
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-
-<div class="container">
-    <div class="form-container">
+    <div class="container mt-5">
         <h2>Add New Event</h2>
-        <form method="post" action="" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="event_name" class="form-label">Event Name</label>
+
+        <?php if (!empty($error)) { ?>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
+        <?php } ?>
+
+        <?php if (!empty($success)) { ?>
+            <div class="alert alert-success"><?php echo $success; ?></div>
+        <?php } ?>
+
+        <form action="add_event.php" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="event_name">Event Name</label>
                 <input type="text" class="form-control" id="event_name" name="event_name" required>
             </div>
-            <div class="mb-3">
-                <label for="event_date" class="form-label">Event Date</label>
+
+            <div class="form-group">
+                <label for="event_date">Event Date</label>
                 <input type="date" class="form-control" id="event_date" name="event_date" required>
             </div>
-            <div class="mb-3">
-                <label for="event_time" class="form-label">Event Time</label>
+
+            <div class="form-group">
+                <label for="event_time">Event Time</label>
                 <input type="time" class="form-control" id="event_time" name="event_time" required>
             </div>
-            <div class="mb-3">
-                <label for="event_location" class="form-label">Location</label>
+
+            <div class="form-group">
+                <label for="event_location">Event Location</label>
                 <input type="text" class="form-control" id="event_location" name="event_location" required>
             </div>
-            <div class="mb-3">
-                <label for="event_description" class="form-label">Event Description</label>
-                <textarea class="form-control" id="event_description" name="event_description" rows="3" required></textarea>
+
+            <div class="form-group">
+                <label for="event_description">Event Description</label>
+                <textarea class="form-control" id="event_description" name="event_description" rows="4" required></textarea>
             </div>
-            <div class="mb-3">
-                <label for="max_participants" class="form-label">Max Participants</label>
+
+            <div class="form-group">
+                <label for="max_participants">Max Participants</label>
                 <input type="number" class="form-control" id="max_participants" name="max_participants" required>
             </div>
-            <div class="mb-3">
-                <label for="event_image" class="form-label">Event Banner Image</label>
-                <input type="file" class="form-control" id="event_image" name="event_image" required>
+
+            <div class="form-group">
+                <label for="event_image">Event Banner (Optional)</label>
+                <input type="file" class="form-control-file" id="event_image" name="event_image">
             </div>
+
             <button type="submit" class="btn btn-primary">Add Event</button>
+            <a href="admin_dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
         </form>
     </div>
-</div>
-
 </body>
 </html>
