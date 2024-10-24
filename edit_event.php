@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Jika tidak ada error, update data event ke database
         if (empty($error)) {
             $stmt = $conn->prepare("UPDATE events SET event_name = ?, event_date = ?, event_time = ?, event_location = ?, event_description = ?, max_participants = ?, event_image = ? WHERE event_id = ?");
-            $stmt->bind_param("sssssis", $event_name, $event_date, $event_time, $event_location, $event_description, $max_participants, $image, $event_id);
+            $stmt->bind_param("sssssisi", $event_name, $event_date, $event_time, $event_location, $event_description, $max_participants, $image, $event_id);
 
             if ($stmt->execute()) {
                 $success = "Event updated successfully!";

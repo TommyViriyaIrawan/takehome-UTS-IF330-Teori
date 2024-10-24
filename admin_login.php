@@ -75,6 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
         <a href="forgot_password.php" class="btn btn-link">Forgot Password?</a>
 
+        <!-- Tambahkan Tombol Daftar -->
+        <div class="mt-3">
+            <span>Belum punya akun? </span><a href="admin_register.php">Daftar</a>
+        </div>
+
         <!-- Div untuk menampilkan pesan error di bawah login container -->
         <?php if ($error_message != ""): ?>
             <div class="error-message">
