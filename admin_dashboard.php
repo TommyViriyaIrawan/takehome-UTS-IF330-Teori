@@ -2,7 +2,7 @@
 session_start();
 require 'config.php';
 
-// Pastikan admin login
+// Pastikan admin sudah login
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.php");
     exit();
@@ -60,12 +60,18 @@ $result_users = $conn->query($sql_users);
 
         <!-- View Event Registrations -->
         <h4>View Event Registrations</h4>
+        <!-- Add New Event Button -->
+        <button id="addEventBtn" class="btn btn-primary mb-3">Add New Event</button>
+
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Event Name</th>
                     <th>Date</th>
+                    <th>Time</th>
                     <th>Location</th>
+                    <th>Description</th>
+                    <th>Banner</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -74,13 +80,27 @@ $result_users = $conn->query($sql_users);
                     <tr>
                         <td><?php echo $row['event_name']; ?></td>
                         <td><?php echo $row['event_date']; ?></td>
+                        <td><?php echo $row['event_time']; ?></td>
                         <td><?php echo $row['event_location']; ?></td>
+                        <td><?php echo $row['event_description']; ?></td>
+                        <!-- Tampilkan Banner Event -->
                         <td>
-                            <!-- List Registrants -->
+                            <?php if (!empty($row['event_image'])) { ?>
+                                <img src="uploads/<?php echo $row['event_image']; ?>" alt="Event Banner" style="width: 100px; height: auto;">
+                            <?php } else { ?>
+                                <span>No Image</span>
+                            <?php } ?>
+                        </td>
+
+                        <td>
+                            <!-- View Registrants -->
                             <a href="view_registrants.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-info">View Registrants</a>
 
                             <!-- Export to CSV -->
                             <a href="admin_dashboard.php?export_registrations=1&event_id=<?php echo $row['event_id']; ?>" class="btn btn-success">Export to CSV</a>
+
+                            <!-- Delete Event -->
+                            <a href="delete_event.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-danger">Delete</a>
                         </td>
                     </tr>
                 <?php } ?>
@@ -133,6 +153,11 @@ $result_users = $conn->query($sql_users);
                     }
                 });
             }
+        });
+
+        // Arahkan ke halaman Add New Event
+        $("#addEventBtn").on("click", function () {
+            window.location.href = "add_event.php";
         });
     </script>
 </body>

@@ -159,7 +159,12 @@ if (isset($_SESSION['user_id'])) {
 
             <?php
         } else {
-            echo "<p>No registered events found.</p>";
+            // Tampilkan pesan jika tidak ada event yang terdaftar
+            echo '<div class="container mt-5">';
+            echo '<div class="alert alert-info text-center" role="alert" style="font-size: 18px; font-weight: bold;">';
+            echo 'No registered events found.';
+            echo '</div>';
+            echo '</div>';
         }
 
         $stmt->close();
