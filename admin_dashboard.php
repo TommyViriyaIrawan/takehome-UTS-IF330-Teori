@@ -119,18 +119,21 @@ $result_users = $conn->query($sql_users);
                         </td>
 
                         <td>
-                            <!-- View Registrants -->
-                            <a href="view_registrants.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-info">View Registrants</a>
+                            <div class="btn-group" role="group" aria-label="Action Buttons">
+                                <!-- View Registrants -->
+                                <a href="view_registrants.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-info">View Registrants</a>
 
-                            <!-- Export to CSV -->
-                            <a href="admin_dashboard.php?export_registrations=1&event_id=<?php echo $row['event_id']; ?>" class="btn btn-success">Export to CSV</a>
+                                <!-- Export to CSV -->
+                                <a href="admin_dashboard.php?export_registrations=1&event_id=<?php echo $row['event_id']; ?>" class="btn btn-success">Export to CSV</a>
 
-                            <a href="edit_event.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-warning">Edit</a>
+                                <!-- Edit Event -->
+                                <a href="edit_event.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-warning">Edit</a>
 
-                            <!-- Delete Event -->
-                            <a href="delete_event.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-danger">Delete</a>
+                                <!-- Delete Event -->
+                                <a href="delete_event.php?event_id=<?php echo $row['event_id']; ?>" class="btn btn-danger">Delete</a>
+                            </div>
                         </td>
-                    </tr>
+
                 <?php } ?>
             </tbody>
         </table>
@@ -163,21 +166,24 @@ $result_users = $conn->query($sql_users);
     </div>
 
     <script>
-        // Function to delete user using AJAX
+        // Function to delete user and their registrations using AJAX
         $(".delete-user-btn").on("click", function () {
             const userId = $(this).data("user-id");
-            if (confirm("Are you sure you want to delete this user?")) {
+            if (confirm("Are you sure you want to delete this user and all their registrations?")) {
                 $.ajax({
-                    url: "delete_user.php",
+                    url: "delete_user_and_registrations.php",
                     type: "POST",
                     data: { user_id: userId },
                     success: function (response) {
                         if (response === "success") {
-                            alert("User deleted successfully.");
+                            alert("User and their registrations deleted successfully.");
                             location.reload();
                         } else {
                             alert("Failed to delete user.");
                         }
+                    },
+                    error: function () {
+                        alert("An error occurred while trying to delete the user.");
                     }
                 });
             }
